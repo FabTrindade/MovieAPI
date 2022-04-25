@@ -10,6 +10,10 @@ namespace MovieAPI.Models
 {
     public class Movie
     {
+        [Key]
+        [Required]
+        public int Id { get; set; }        
+                
         [Required (ErrorMessage = "The Title field is required.")]
         public string Title { get; set; }
         [Required (ErrorMessage = "The Diector field is required.")]
