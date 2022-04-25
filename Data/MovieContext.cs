@@ -5,9 +5,10 @@ using MovieAPI.Models;
 
 namespace MovieAPI.Data
 {
-    public class MovieContext : DbContext
+    public class MoviesContext : DbContext
     {
-        public MovieContext(DbContextOptions <MovieContext> opt ) : base(opt)
+        
+        public MoviesContext (DbContextOptions <MoviesContext> opt ) : base(opt)
         {
 
         }

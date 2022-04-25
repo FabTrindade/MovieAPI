@@ -14,8 +14,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MovieAPI.Data;
 
-
-
 namespace MovieAPI
 {
     public class Startup
@@ -31,7 +29,7 @@ namespace MovieAPI
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<MovieContext>(opts => opts.UseMySQL(Configuration.GetConnectionString("MovieConnection")));
+            services.AddDbContext<MoviesContext>(opts => opts.UseMySQL(Configuration.GetConnectionString("MovieConnection")));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
