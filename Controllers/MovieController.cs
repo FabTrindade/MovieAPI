@@ -12,13 +12,19 @@ namespace MovieAPI.Controllers
     [Route("[controller]")]
     public class MovieController : ControllerBase
     {
-        private List<Movie> movies = new List<Movie>();
+        private static List<Movie> movies = new List<Movie>();
 
         [HttpPost]
         public void AddMovie([FromBody] Movie movie)
         {
             movies.Add(movie);
             Console.WriteLine(movie.Title);
+        }
+        
+        [HttpGet]
+        public IEnumerable<Movie> GetMovies()
+        {
+            return movies;
         }
     }
 }
