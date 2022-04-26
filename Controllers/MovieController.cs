@@ -34,11 +34,46 @@ namespace MovieAPI.Controllers
             return (_contex.Movies);
         }
 
-        [HttpGet("{Id}")]
+        [HttpGet("{id}")]
         public IActionResult GetMoviesById(int id)
         {
             Movie movie = _contex.Movies.FirstOrDefault(movie => movie.Id == id);            
             return (movie != null)? Ok(movie) : NotFound();
+        }
+
+        [HttpPut ("{id}")]
+        public IActionResult UpdateMovie(int id, [FromBody] Movie newMovie)
+        {
+            Movie movie = _contex.Movies.FirstOrDefault(movie => movie.Id == id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            movie.Title = newMovie.Title;
+            movie.Director = newMovie.Director;
+            movie.Genre= newMovie.Genre;
+            movie.Duration = newMovie.Duration;
+            _contex.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+
+        public IActionResult DeleteMovie (int id)
+        {
+            Movie movie = _contex.Movies.FirstOrDefault(movie => movie.Id == id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            _contex.Remove(movie);
+            _contex.SaveChanges();
+
+            return NoContent();
         }
 
     }
