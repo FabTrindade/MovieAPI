@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MovieAPI.Data;
 using MovieAPI.Models;
+using MovieAPI.Data.Dtos;
 
 namespace MovieAPI.Controllers
 {
@@ -21,9 +22,16 @@ namespace MovieAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddMovie([FromBody] Movie movie)
+        public IActionResult AddMovie([FromBody] CreateMovieDto movieDto)
         {
-            _contex.Movies.Add(movie);
+           Movie movie = new Movie
+           {
+               Title = movieDto.Title,
+               Director = movieDto.Director,
+               Genre = movieDto.Genre,
+               Duration = movieDto.Duration
+           };
+           _contex.Movies.Add(movie);
             _contex.SaveChanges();
             return CreatedAtAction(nameof(GetMoviesById), new {Id = movie.Id}, movie);
         }
@@ -38,11 +46,24 @@ namespace MovieAPI.Controllers
         public IActionResult GetMoviesById(int id)
         {
             Movie movie = _contex.Movies.FirstOrDefault(movie => movie.Id == id);            
-            return (movie != null)? Ok(movie) : NotFound();
+            if (movie != null)
+            {
+                 NotFound();
+            }
+            GetMovieDto movieDto = new GetMovieDto
+            {
+                Title = movie.Title,
+                Director = movie.Director,
+                Genre = movie.Genre,
+                Duration = movie.Duration,
+                ConsultTime = DateTime.Now
+            };
+            
+            return Ok(movieDto);
         }
 
         [HttpPut ("{id}")]
-        public IActionResult UpdateMovie(int id, [FromBody] Movie newMovie)
+        public IActionResult UpdateMovie(int id, [FromBody] UpdateMovieDto movieDto)
         {
             Movie movie = _contex.Movies.FirstOrDefault(movie => movie.Id == id);
 
@@ -51,10 +72,10 @@ namespace MovieAPI.Controllers
                 return NotFound();
             }
 
-            movie.Title = newMovie.Title;
-            movie.Director = newMovie.Director;
-            movie.Genre= newMovie.Genre;
-            movie.Duration = newMovie.Duration;
+            movie.Title = movieDto.Title;
+            movie.Director = movieDto.Director;
+            movie.Genre= movieDto.Genre;
+            movie.Duration = movieDto.Duration;
             _contex.SaveChanges();
             return NoContent();
         }
