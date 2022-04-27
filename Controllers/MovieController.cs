@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,8 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MovieAPI.Data;
-using MovieAPI.Models;
 using MovieAPI.Data.Dtos;
+using MovieAPI.Models;
+using MovieAPI.Profiles;
+
 
 namespace MovieAPI.Controllers
 {
@@ -15,22 +18,19 @@ namespace MovieAPI.Controllers
     public class MovieController : ControllerBase
     {
         private MoviesContext _contex;
+        private IMapper _mapper;
 
-        public MovieController(MoviesContext contex)
+        public MovieController(MoviesContext contex, IMapper mapper)
         {
             _contex = contex;
+            _mapper = mapper;
         }
 
         [HttpPost]
         public IActionResult AddMovie([FromBody] CreateMovieDto movieDto)
         {
-           Movie movie = new Movie
-           {
-               Title = movieDto.Title,
-               Director = movieDto.Director,
-               Genre = movieDto.Genre,
-               Duration = movieDto.Duration
-           };
+           Movie movie = _mapper.Map<Movie>(movieDto);
+
            _contex.Movies.Add(movie);
             _contex.SaveChanges();
             return CreatedAtAction(nameof(GetMoviesById), new {Id = movie.Id}, movie);
@@ -50,15 +50,8 @@ namespace MovieAPI.Controllers
             {
                  NotFound();
             }
-            GetMovieDto movieDto = new GetMovieDto
-            {
-                Title = movie.Title,
-                Director = movie.Director,
-                Genre = movie.Genre,
-                Duration = movie.Duration,
-                ConsultTime = DateTime.Now
-            };
-            
+            GetMovieDto movieDto = _mapper.Map<GetMovieDto>(movie);
+            movieDto.ConsultTime = DateTime.Now;
             return Ok(movieDto);
         }
 
@@ -72,10 +65,7 @@ namespace MovieAPI.Controllers
                 return NotFound();
             }
 
-            movie.Title = movieDto.Title;
-            movie.Director = movieDto.Director;
-            movie.Genre= movieDto.Genre;
-            movie.Duration = movieDto.Duration;
+            _mapper.Map(movieDto, movie);
             _contex.SaveChanges();
             return NoContent();
         }
